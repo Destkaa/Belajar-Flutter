@@ -9,6 +9,10 @@ import 'package:rpl2/sized_expanded_stack/SizedBoxWidget.dart';
 import 'package:rpl2/sized_expanded_stack/ExpandedWidget.dart';
 import 'package:rpl2/sized_expanded_stack/StackWidget.dart';
 import 'package:rpl2/sized_expanded_stack/LatihanTiga.dart';
+import 'package:rpl2/sized_expanded_stack/LayoutSatu.dart';
+import 'package:rpl2/sized_expanded_stack/LayoutDua.dart';
+import 'package:rpl2/sized_expanded_stack/LayoutTiga.dart';
+import 'package:rpl2/sized_expanded_stack/LatihanLayout.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,7 +26,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: const LatihanTiga(),
+        body: LatihanLayout(),
       ),
     );
   }

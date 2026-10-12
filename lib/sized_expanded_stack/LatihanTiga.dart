@@ -47,7 +47,7 @@ class LatihanTiga extends StatelessWidget {
                   width: double.infinity,
                   height: 260,
                   child: Image.asset(
-                    'assets/genshin.jpg',
+                    'assets/Flins.jpg',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -141,7 +141,7 @@ class LatihanTiga extends StatelessWidget {
                     ),
                     child: ClipOval(
                       child: Image.asset(
-                        'assets/foto.jpg',
+                        'assets/Ronova.jpg',
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -311,7 +311,7 @@ class LatihanTiga extends StatelessWidget {
 
                   const Text(
                     "Frontend Developer Student\n"
-                    "Photography • UI Design • Technology",
+                    "Photography • UI Design • Technology • Gamers",
                     style: TextStyle(
                       color: Colors.grey,
                       fontSize: 18,
