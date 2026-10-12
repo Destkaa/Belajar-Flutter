@@ -13,6 +13,11 @@ import 'package:rpl2/sized_expanded_stack/LayoutSatu.dart';
 import 'package:rpl2/sized_expanded_stack/LayoutDua.dart';
 import 'package:rpl2/sized_expanded_stack/LayoutTiga.dart';
 import 'package:rpl2/sized_expanded_stack/LatihanLayout.dart';
+import 'package:rpl2/list_grid_view/ListView.dart';
+import 'package:rpl2/list_grid_view/ListView.builder.dart';
+import 'package:rpl2/list_grid_view/ListView.separated.dart';
+import 'package:rpl2/list_grid_view/GridView.basic.dart';
+import 'package:rpl2/list_grid_view/GridView.builder.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,7 +31,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: LatihanLayout(),
+        body: ContohGridViewBuilder(),
       ),
     );
   }
