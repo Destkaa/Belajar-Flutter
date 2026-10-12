@@ -39,10 +39,6 @@ class LatihanDua extends StatelessWidget {
                     height: 200,
                     color: const Color.fromARGB(255, 76, 73, 222),
                     alignment: Alignment.center,
-                    child: const Text(
-                      "Kotak 1",
-                      style: TextStyle(color: Color.fromARGB(255, 135, 134, 134)),
-                    ),
                   ),
                   Container(
                     width: 150,
@@ -66,15 +62,11 @@ class LatihanDua extends StatelessWidget {
                     height: 200,
                     color: const Color.fromARGB(255, 76, 73, 222),
                     alignment: Alignment.center,
-                    child: const Text(
-                      "Kotak 2",
-                      style: TextStyle(color: Color.fromARGB(255, 222, 226, 222)),
-                    ),
                   ),
                   Container(
                     width: 150,
                     height: 150,
-                    color: const Color.fromARGB(255, 126, 231, 126),
+                    color: const Color.fromARGB(255, 102, 225, 102),
                     alignment: Alignment.center,
                     child: const Text(
                     "Kotak 2",
@@ -101,7 +93,7 @@ class LatihanDua extends StatelessWidget {
               color: Colors.green,
               alignment: Alignment.center,
               child: const Text(
-                "Kaka",
+                "Eden Hazard",
                 style: TextStyle(color: Colors.white),
               ),
             ),
@@ -123,7 +115,7 @@ class LatihanDua extends StatelessWidget {
               color: Colors.green,
               alignment: Alignment.center,
               child: const Text(
-                "Destkaa",
+                "Reece James",
                 style: TextStyle(color: Colors.white),
               ),
             ),

@@ -5,6 +5,10 @@ import 'package:rpl2/row_column_widget/RowWidget.dart';
 import 'package:rpl2/row_column_widget/RowColumnWidget.dart';
 import 'package:rpl2/row_column_widget/LatihanSatu.dart';
 import 'package:rpl2/row_column_widget/LatihanDua.dart';
+import 'package:rpl2/sized_expanded_stack/SizedBoxWidget.dart';
+import 'package:rpl2/sized_expanded_stack/ExpandedWidget.dart';
+import 'package:rpl2/sized_expanded_stack/StackWidget.dart';
+import 'package:rpl2/sized_expanded_stack/LatihanTiga.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: const LatihanDua(),
+        body: const LatihanTiga(),
       ),
     );
   }
