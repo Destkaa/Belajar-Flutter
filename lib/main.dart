@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: ContohGridViewBuilder(),
+        body: ContohGridViewBuilder(), //sesuaikan dengan class nya 
       ),
     );
   }
