@@ -5,11 +5,11 @@ class ContohGridViewBuilder extends StatelessWidget {
 
   final List<String> namaSiswa = const [
     'Kaka Viangi',
-    'Andi',
-    'Budi',
-    'Siti',
-    'Dina',
-    'Rizky',
+    'Hanif Rayhanur Sjattar',
+    'Rizky Reivaldi',
+    'Naufal Sayyid',
+    'Raka Muhammad Alfathir',
+    'Davin Ghaisan',
   ];
 
   @override
@@ -17,7 +17,7 @@ class ContohGridViewBuilder extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('GridView Builder'),
-        backgroundColor: Colors.green,
+        backgroundColor: const Color.fromARGB(255, 39, 104, 139),
       ),
       body: GridView.builder(
         padding: const EdgeInsets.all(10),
@@ -31,7 +31,7 @@ class ContohGridViewBuilder extends StatelessWidget {
         itemCount: namaSiswa.length,
         itemBuilder: (context, index) {
           return Card(
-            color: Colors.teal,
+            color: const Color.fromARGB(255, 29, 86, 125),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
