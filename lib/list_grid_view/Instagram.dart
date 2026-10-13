@@ -31,12 +31,11 @@ class BerandaInstagram extends StatelessWidget {
     );
   }
 
-  // DATA STORY
+  // DATA STORY (10 ORANG)
   final List<Map<String, String>> stories = const [
     {
       'name': 'ahmd.ardnsyh',
-      'image':
-          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300',
+      'image': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300',
     },
     {
       'name': 'rfpr tmm',
@@ -44,13 +43,35 @@ class BerandaInstagram extends StatelessWidget {
     },
     {
       'name': 'candra.js',
-      'image':
-          'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300',
+      'image': 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300',
     },
     {
-      'name': 'teman_kamu',
-      'image':
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300',
+      'name': 'Hannan',
+      'image': 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300',
+    },
+    {
+      'name': 'rizky_12',
+      'image': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300',
+    },
+    {
+      'name': 'siti.nur',
+      'image': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300',
+    },
+    {
+      'name': 'dimas_p',
+      'image': 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300',
+    },
+    {
+      'name': 'dewi_art',
+      'image': 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300',
+    },
+    {
+      'name': 'fajar_dev',
+      'image': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300',
+    },
+    {
+      'name': 'nabila_m',
+      'image': 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300',
     },
   ];
 
@@ -329,8 +350,7 @@ class BerandaInstagram extends StatelessWidget {
                     : Image.network(
                         image,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) =>
-                            _placeholder(),
+                        errorBuilder: (_, __, ___) => _placeholder(),
                       ),
               ),
             ),
@@ -401,8 +421,7 @@ class BerandaInstagram extends StatelessWidget {
                         width: 38,
                         height: 38,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) =>
-                            _placeholder(),
+                        errorBuilder: (_, __, ___) => _placeholder(),
                       ),
               ),
               const SizedBox(width: 9),
@@ -483,7 +502,7 @@ class BerandaInstagram extends StatelessWidget {
           ),
         ),
 
-        // IKON INTERAKSI DENGAN JARAK LEBIH RAPAT
+        // IKON INTERAKSI
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 9, 12, 12),
           child: Row(
@@ -512,10 +531,11 @@ class BerandaInstagram extends StatelessWidget {
 
               const Spacer(),
 
-              // SIMPAN
+              // SIMPAN (BOOKMARK INSTAGRAM - FIXED)
               svgIcon(
-                '<path d="M6 3h12v18l-6-4-6 4Z"/>',
-                size: 26,
+                '<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>',
+                size: 27,
+                strokeWidth: 1.8,
               ),
             ],
           ),
