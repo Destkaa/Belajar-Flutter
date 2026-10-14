@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import 'package:rpl2/container_widget/LatihanContainer.dart';
@@ -27,6 +26,11 @@ import 'package:rpl2/list_grid_view/Instagram.dart';
 import 'package:rpl2/list_grid_view/GridScreen.dart';
 import 'package:rpl2/list_grid_view/GridProduct.dart';
 
+import 'package:rpl2/pages/home_page.dart';
+import 'package:rpl2/pages/about_page.dart';
+
+import 'package:rpl2/routes/app_routes.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -36,9 +40,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: BerandaInstagram(),
+      initialRoute: '/',
+      routes: AppRoutes.routes,
+      // home: BerandaInstagram(),
     );
   }
 }
