@@ -32,6 +32,8 @@ import 'package:rpl2/pages/about_page.dart';
 import 'package:rpl2/routes/app_routes.dart';
 
 import 'package:rpl2/pages/formulir.dart';
+import 'package:rpl2/pages/input_page.dart';
+import 'package:rpl2/pages/output_page.dart';
 
 void main() {
   runApp(const MyApp());

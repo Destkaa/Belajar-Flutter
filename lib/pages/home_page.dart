@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rpl2/list_grid_view/Instagram.dart';
 import 'package:rpl2/pages/formulir.dart';
+import 'package:rpl2/pages/input_page.dart';
 import 'about_page.dart';
 import 'package:rpl2/list_grid_view/ListView.dart';
 import 'package:rpl2/list_grid_view/GridView.basic.dart';
@@ -18,6 +19,7 @@ class HomePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text('Halaman Home'),
+
           ElevatedButton(
             onPressed: () {
               Navigator.push(
@@ -31,6 +33,7 @@ class HomePage extends StatelessWidget {
             },
             child: const Text('Pergi ke About'),
           ),
+
           ElevatedButton(
             onPressed: () {
               Navigator.push(
@@ -44,6 +47,7 @@ class HomePage extends StatelessWidget {
             },
             child: const Text('Pergi ke ListView'),
           ),
+
           ElevatedButton(
             onPressed: () {
               Navigator.push(
@@ -57,6 +61,7 @@ class HomePage extends StatelessWidget {
             },
             child: const Text('Pergi ke GridView Basic'),
           ),
+
           ElevatedButton(
             onPressed: () {
               Navigator.push(
@@ -70,6 +75,7 @@ class HomePage extends StatelessWidget {
             },
             child: const Text('Pergi ke Instagram'),
           ),
+
           ElevatedButton(
             onPressed: () {
               Navigator.push(
@@ -82,6 +88,20 @@ class HomePage extends StatelessWidget {
               );
             },
             child: const Text('Pergi ke Formulir'),
+          ),
+
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return BelajarForm();
+                  },
+                ),
+              );
+            },
+            child: const Text('Pergi ke Input Form'),
           ),
         ],
       ),
