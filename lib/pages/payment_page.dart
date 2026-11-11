@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../models/product.dart';
@@ -13,9 +12,9 @@ const Color background = Color(0xFFF5F7FA);
 
 class PaymentPage extends StatefulWidget {
   final Product? product;
-  final String? size;
+  final List<String>? sizes;
+  final List<String?>? imagePaths;
   final int? quantity;
-  final String? imagePath;
   final List<CartItem>? items;
 
   // CHECKOUT LANGSUNG DARI DETAIL PRODUK
@@ -23,11 +22,12 @@ class PaymentPage extends StatefulWidget {
   const PaymentPage({
     super.key,
     required Product product,
-    required String size,
+    required List<String> sizes,
+    required List<String?> imagePaths,
     required int quantity,
-    this.imagePath,
   })  : product = product,
-        size = size,
+        sizes = sizes,
+        imagePaths = imagePaths,
         quantity = quantity,
         items = null;
 
@@ -37,9 +37,9 @@ class PaymentPage extends StatefulWidget {
     super.key,
     required List<CartItem> items,
   })  : product = null,
-        size = null,
+        sizes = null,
+        imagePaths = null,
         quantity = null,
-        imagePath = null,
         items = items;
 
   @override
@@ -50,7 +50,6 @@ class _PaymentPageState extends State<PaymentPage> {
   late List<CartItem> orderItems;
 
   bool isPaid = false;
-
   String selectedPayment = 'Cash (Tunai)';
 
   static const int shippingCost = 15000;
@@ -59,34 +58,26 @@ class _PaymentPageState extends State<PaymentPage> {
   void initState() {
     super.initState();
 
-    // MENGAMBIL DATA DARI KERANJANG
-
     if (widget.items != null) {
       orderItems = widget.items!.map((item) {
         return CartItem(
           product: item.product,
-          size: item.size,
+          sizes: List<String>.from(item.sizes),
+          imagePaths: List<String?>.from(item.imagePaths),
           quantity: item.quantity,
-          imagePath: item.imagePath,
         );
       }).toList();
     } else {
-      // MENGAMBIL DATA DARI DETAIL PRODUK
-
       orderItems = [
         CartItem(
           product: widget.product!,
-          size: widget.size!,
+          sizes: List<String>.from(widget.sizes!),
+          imagePaths: List<String?>.from(widget.imagePaths!),
           quantity: widget.quantity!,
-          imagePath: widget.imagePath,
         ),
       ];
     }
   }
-
-  // ==========================================
-  // TOTAL PEMBAYARAN
-  // ==========================================
 
   int get subtotal {
     return orderItems.fold(
@@ -95,167 +86,164 @@ class _PaymentPageState extends State<PaymentPage> {
     );
   }
 
-  int get total {
-    return subtotal + shippingCost;
+  int get total => subtotal + shippingCost;
+
+  String imageName(String? path) {
+    if (path == null) return 'Foto tidak tersedia';
+
+    return path
+        .split('/')
+        .last
+        .replaceAll('.jpg', '')
+        .replaceAll('.jpeg', '')
+        .replaceAll('.png', '')
+        .replaceAll('_', ' ');
   }
 
-  // ==========================================
-  // PRODUCT IMAGE
-  // ==========================================
-
-  Widget buildProductImage(CartItem item) {
-    final image = item.imagePath ??
-        (item.product.images.isNotEmpty
-            ? item.product.images.first
-            : null);
+  Widget buildUnitImage(CartItem item, int index) {
+    final image = item.imageAt(index);
 
     if (image == null) {
-      return const Center(
-        child: Icon(
-          Icons.image_not_supported_outlined,
-          color: Colors.grey,
-          size: 35,
-        ),
+      return const Icon(
+        Icons.image_not_supported_outlined,
+        color: Colors.grey,
+        size: 35,
       );
     }
 
     return Image.asset(
       image,
       fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) {
-        return const Center(
-          child: Icon(
-            Icons.broken_image_outlined,
-            color: Colors.grey,
-          ),
+      errorBuilder: (_, __, ___) {
+        return const Icon(
+          Icons.broken_image_outlined,
+          color: Colors.grey,
         );
       },
     );
   }
 
-  // ==========================================
-  // ORDER ITEM
-  // ==========================================
-
   Widget buildOrderItem(CartItem item) {
-    // BACKPACK TIDAK MEMILIKI UKURAN
-
-    final bool hasSize =
-        item.product.name.toLowerCase() != 'backpack';
-
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
         color: const Color(0xFFF5F7FA),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: Colors.grey.shade200,
-        ),
+        border: Border.all(color: Colors.grey.shade200),
       ),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // GAMBAR PRODUK
-
-          Container(
-            width: 85,
-            height: 95,
-            decoration: BoxDecoration(
-              color: const Color(0xFFEAF1F8),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: buildProductImage(item),
-          ),
-
-          const SizedBox(width: 13),
-
-          // INFORMASI PRODUK
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.product.name,
-                  style: const TextStyle(
-                    color: navy,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
-                ),
-
-                const SizedBox(height: 5),
-
-                Text(
-                  item.product.category,
-                  style: const TextStyle(
-                    color: Colors.black54,
-                    fontSize: 12,
-                  ),
-                ),
-
-                // UKURAN PRODUK
-
-                if (hasSize) ...[
-                  const SizedBox(height: 5),
-
-                  Text(
-                    'Ukuran: ${item.size}',
-                    style: const TextStyle(
-                      color: navy,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-
-                const SizedBox(height: 7),
-
-                Text(
-                  'Jumlah: ${item.quantity}',
-                  style: const TextStyle(
-                    color: navy,
-                    fontSize: 12,
-                  ),
-                ),
-
-                const SizedBox(height: 5),
-
-                // HARGA SATUAN
-
-                Text(
-                  formatRupiah(item.product.price),
-                  style: const TextStyle(
-                    color: blue,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(width: 8),
-
-          // TOTAL HARGA PRODUK
-
           Text(
-            formatRupiah(item.subtotal),
+            item.product.name,
             style: const TextStyle(
               color: navy,
               fontWeight: FontWeight.bold,
-              fontSize: 13,
+              fontSize: 16,
             ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            item.product.category,
+            style: const TextStyle(
+              color: Colors.black54,
+              fontSize: 12,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...List.generate(item.quantity, (index) {
+            return Container(
+              margin: const EdgeInsets.only(bottom: 9),
+              padding: const EdgeInsets.all(9),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 65,
+                    height: 75,
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAF1F8),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: buildUnitImage(item, index),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Unit ${index + 1}',
+                          style: const TextStyle(
+                            color: navy,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          imageName(item.imageAt(index)),
+                          style: const TextStyle(
+                            color: Colors.black54,
+                            fontSize: 12,
+                          ),
+                        ),
+                        if (item.hasSize) ...[
+                          const SizedBox(height: 3),
+                          Text(
+                            'Ukuran: ${item.sizeAt(index)}',
+                            style: const TextStyle(
+                              color: navy,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 4),
+                        Text(
+                          formatRupiah(item.product.price),
+                          style: const TextStyle(
+                            color: blue,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+          const Divider(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Jumlah: ${item.quantity}',
+                style: const TextStyle(
+                  color: navy,
+                  fontSize: 12,
+                ),
+              ),
+              Text(
+                'Subtotal: ${formatRupiah(item.subtotal)}',
+                style: const TextStyle(
+                  color: navy,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-
-  // ==========================================
-  // SUMMARY ROW
-  // ==========================================
 
   Widget summaryRow(
     String title,
@@ -272,14 +260,11 @@ class _PaymentPageState extends State<PaymentPage> {
               title,
               style: TextStyle(
                 color: isTotal ? navy : Colors.black54,
-                fontWeight:
-                    isTotal ? FontWeight.bold : FontWeight.normal,
+                fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
               ),
             ),
           ),
-
           const SizedBox(width: 10),
-
           Flexible(
             child: Text(
               value,
@@ -295,10 +280,6 @@ class _PaymentPageState extends State<PaymentPage> {
       ),
     );
   }
-
-  // ==========================================
-  // PAYMENT METHOD
-  // ==========================================
 
   Widget buildPaymentMethod() {
     final methods = [
@@ -331,9 +312,7 @@ class _PaymentPageState extends State<PaymentPage> {
               color: navy,
             ),
           ),
-
           const SizedBox(height: 12),
-
           ...methods.map((method) {
             final name = method['name'] as String;
             final icon = method['icon'] as IconData;
@@ -356,22 +335,14 @@ class _PaymentPageState extends State<PaymentPage> {
                       : Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isSelected
-                        ? blue
-                        : Colors.grey.shade300,
+                    color: isSelected ? blue : Colors.grey.shade300,
                     width: isSelected ? 1.5 : 1,
                   ),
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      icon,
-                      color: navy,
-                      size: 28,
-                    ),
-
+                    Icon(icon, color: navy, size: 28),
                     const SizedBox(width: 12),
-
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -383,9 +354,7 @@ class _PaymentPageState extends State<PaymentPage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-
                           const SizedBox(height: 4),
-
                           Text(
                             description,
                             style: const TextStyle(
@@ -396,7 +365,6 @@ class _PaymentPageState extends State<PaymentPage> {
                         ],
                       ),
                     ),
-
                     Icon(
                       isSelected
                           ? Icons.radio_button_checked
@@ -413,10 +381,6 @@ class _PaymentPageState extends State<PaymentPage> {
     );
   }
 
-  // ==========================================
-  // CONFIRM PAYMENT
-  // ==========================================
-
   void confirmPayment() {
     if (orderItems.isEmpty) return;
 
@@ -424,16 +388,10 @@ class _PaymentPageState extends State<PaymentPage> {
       isPaid = true;
     });
 
-    // KOSONGKAN KERANJANG JIKA CHECKOUT DARI CART
-
     if (widget.items != null) {
       cartItems.clear();
     }
   }
-
-  // ==========================================
-  // BACK TO STORE PAGE
-  // ==========================================
 
   void backToStore() {
     Navigator.of(context).pushAndRemoveUntil(
@@ -443,10 +401,6 @@ class _PaymentPageState extends State<PaymentPage> {
       (route) => false,
     );
   }
-
-  // ==========================================
-  // RECEIPT / STRUK PEMBAYARAN
-  // ==========================================
 
   Widget buildReceipt() {
     return Center(
@@ -466,9 +420,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 color: Colors.green,
                 size: 75,
               ),
-
               const SizedBox(height: 15),
-
               const Text(
                 'Pembayaran Berhasil!',
                 style: TextStyle(
@@ -477,19 +429,13 @@ class _PaymentPageState extends State<PaymentPage> {
                   color: navy,
                 ),
               ),
-
               const SizedBox(height: 8),
-
               const Text(
                 'Terima kasih telah berbelanja di PERSIB STORE.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black54,
-                ),
+                style: TextStyle(color: Colors.black54),
               ),
-
               const Divider(height: 30),
-
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -501,46 +447,20 @@ class _PaymentPageState extends State<PaymentPage> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 15),
-
-              // MENAMPILKAN SEMUA PRODUK YANG DIBELI
-
               ...orderItems.map(buildOrderItem),
-
               const Divider(height: 25),
-
-              // RINGKASAN PEMBAYARAN
-
-              summaryRow(
-                'Subtotal',
-                formatRupiah(subtotal),
-              ),
-
-              summaryRow(
-                'Ongkos Kirim',
-                formatRupiah(shippingCost),
-              ),
-
+              summaryRow('Subtotal', formatRupiah(subtotal)),
+              summaryRow('Ongkos Kirim', formatRupiah(shippingCost)),
               const Divider(height: 20),
-
               summaryRow(
                 'Total Pembayaran',
                 formatRupiah(total),
                 isTotal: true,
               ),
-
               const SizedBox(height: 10),
-
-              summaryRow(
-                'Metode Pembayaran',
-                selectedPayment,
-              ),
-
+              summaryRow('Metode Pembayaran', selectedPayment),
               const SizedBox(height: 25),
-
-              // TOMBOL KEMBALI
-
               SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -553,14 +473,10 @@ class _PaymentPageState extends State<PaymentPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  icon: const Icon(
-                    Icons.storefront_outlined,
-                  ),
+                  icon: const Icon(Icons.storefront_outlined),
                   label: const Text(
                     'Kembali ke Beranda',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -570,10 +486,6 @@ class _PaymentPageState extends State<PaymentPage> {
       ),
     );
   }
-
-  // ==========================================
-  // BUILD
-  // ==========================================
 
   @override
   Widget build(BuildContext context) {
@@ -592,13 +504,11 @@ class _PaymentPageState extends State<PaymentPage> {
 
     return Scaffold(
       backgroundColor: background,
-
       appBar: AppBar(
         backgroundColor: navy,
         foregroundColor: Colors.white,
         title: const Text('Payment Gateway'),
       ),
-
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(18),
         child: Column(
@@ -612,17 +522,9 @@ class _PaymentPageState extends State<PaymentPage> {
                 color: navy,
               ),
             ),
-
             const SizedBox(height: 15),
-
-            // DAFTAR PRODUK SEBELUM PEMBAYARAN
-
             ...orderItems.map(buildOrderItem),
-
             const SizedBox(height: 10),
-
-            // PAYMENT SUMMARY
-
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
@@ -631,18 +533,12 @@ class _PaymentPageState extends State<PaymentPage> {
               ),
               child: Column(
                 children: [
-                  summaryRow(
-                    'Subtotal',
-                    formatRupiah(subtotal),
-                  ),
-
+                  summaryRow('Subtotal', formatRupiah(subtotal)),
                   summaryRow(
                     'Ongkos Kirim',
                     formatRupiah(shippingCost),
                   ),
-
                   const Divider(height: 25),
-
                   summaryRow(
                     'Total Pembayaran',
                     formatRupiah(total),
@@ -651,17 +547,9 @@ class _PaymentPageState extends State<PaymentPage> {
                 ],
               ),
             ),
-
             const SizedBox(height: 20),
-
-            // PAYMENT METHOD
-
             buildPaymentMethod(),
-
             const SizedBox(height: 25),
-
-            // CONFIRM BUTTON
-
             SizedBox(
               width: double.infinity,
               height: 52,
@@ -684,7 +572,6 @@ class _PaymentPageState extends State<PaymentPage> {
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
           ],
         ),
