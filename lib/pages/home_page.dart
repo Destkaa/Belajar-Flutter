@@ -7,6 +7,8 @@ import 'package:rpl2/list_grid_view/ListView.dart';
 import 'package:rpl2/list_grid_view/GridView.basic.dart';
 import 'package:rpl2/pages/store_page.dart';
 import 'package:rpl2/pages/Album_page.dart';
+import 'package:rpl2/pages/post_page.dart';
+import 'package:rpl2/pages/user_page.dart';
 
 const Color navy = Color(0xFF102A43);
 const Color blue = Color(0xFF1455A3);
@@ -223,6 +225,25 @@ class HomePage extends StatelessWidget {
                     navigate(context, const AlbumPage());
                   },
                 ),
+
+                MenuCard(
+                  title: 'Post Page',
+                  subtitle: 'Post',
+                  icon: Icons.storefront_rounded,
+                  color: const Color(0xFF8E5BA6),
+                  onTap: () {
+                    navigate(context, const PostPage());
+                  },
+                ),
+                MenuCard(
+                  title: 'Users Page',
+                  subtitle: 'Users',
+                  icon: Icons.storefront_rounded,
+                  color: const Color(0xFF8E5BA6),
+                  onTap: () {
+                    navigate(context, const UserPage());
+                  },
+                )
               ],
             ),
 
