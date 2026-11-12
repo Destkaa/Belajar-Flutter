@@ -87,6 +87,7 @@ class _DetailPageState extends State<DetailPage> {
           if (index < oldImages.length) {
             return oldImages[index];
           }
+
           return firstImage;
         },
       );
@@ -97,6 +98,7 @@ class _DetailPageState extends State<DetailPage> {
           if (index < oldSizes.length) {
             return oldSizes[index];
           }
+
           return defaultSize;
         },
       );
@@ -120,7 +122,9 @@ class _DetailPageState extends State<DetailPage> {
 
     if (count <= 1 || !imageController.hasClients) return;
 
-    final index = currentImage > 0 ? currentImage - 1 : count - 1;
+    final index = currentImage > 0
+        ? currentImage - 1
+        : count - 1;
 
     imageController.animateToPage(
       index,
@@ -134,7 +138,9 @@ class _DetailPageState extends State<DetailPage> {
 
     if (count <= 1 || !imageController.hasClients) return;
 
-    final index = currentImage < count - 1 ? currentImage + 1 : 0;
+    final index = currentImage < count - 1
+        ? currentImage + 1
+        : 0;
 
     imageController.animateToPage(
       index,
@@ -156,6 +162,7 @@ class _DetailPageState extends State<DetailPage> {
     }
   }
 
+  // Menambahkan produk ke keranjang.
   void addProductToCart() {
     addToCart(
       product: widget.product,
@@ -180,15 +187,39 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
+  // Membeli produk sekarang beserta seluruh isi keranjang.
   void buyNow() {
+    // Salin seluruh isi keranjang.
+    final List<CartItem> checkoutItems = cartItems.map((item) {
+      return CartItem(
+        product: item.product,
+        sizes: List<String>.from(item.sizes),
+        imagePaths: List<String?>.from(item.imagePaths),
+        quantity: item.quantity,
+      );
+    }).toList();
+
+    // Cari apakah produk sudah ada di keranjang.
+    final existingIndex = checkoutItems.indexWhere(
+      (item) => item.product.id == widget.product.id,
+    );
+
+    if (existingIndex == -1) {
+      checkoutItems.add(
+        CartItem(
+          product: widget.product,
+          sizes: List<String>.from(selectedSizes),
+          imagePaths: List<String?>.from(selectedImages),
+          quantity: quantity,
+        ),
+      );
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PaymentPage(
-          product: widget.product,
-          sizes: selectedSizes,
-          imagePaths: selectedImages,
-          quantity: quantity,
+        builder: (context) => PaymentPage.fromCart(
+          items: checkoutItems,
         ),
       ),
     );
@@ -206,6 +237,7 @@ class _DetailPageState extends State<DetailPage> {
         .replaceAll('_', ' ');
   }
 
+  // Pilihan foto untuk setiap unit.
   Widget buildUnitImageSelection(int index) {
     final images = widget.product.images;
 
@@ -227,7 +259,9 @@ class _DetailPageState extends State<DetailPage> {
             fontSize: 13,
           ),
         ),
+
         const SizedBox(height: 8),
+
         Row(
           children: [
             Container(
@@ -242,11 +276,15 @@ class _DetailPageState extends State<DetailPage> {
                 selectedImages[index] ?? images.first,
                 fit: BoxFit.contain,
                 errorBuilder: (_, __, ___) {
-                  return const Icon(Icons.broken_image_outlined);
+                  return const Icon(
+                    Icons.broken_image_outlined,
+                  );
                 },
               ),
             ),
+
             const SizedBox(width: 12),
+
             Expanded(
               child: DropdownButtonFormField<String>(
                 value: selectedImages[index] ?? images.first,
@@ -284,6 +322,7 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
+  // Pilihan foto dan ukuran setiap unit.
   Widget buildUnitSelection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,7 +335,9 @@ class _DetailPageState extends State<DetailPage> {
             color: navy,
           ),
         ),
+
         const SizedBox(height: 5),
+
         const Text(
           'Atur foto dan ukuran untuk setiap unit secara terpisah.',
           style: TextStyle(
@@ -304,6 +345,7 @@ class _DetailPageState extends State<DetailPage> {
             fontSize: 12,
           ),
         ),
+
         const SizedBox(height: 14),
 
         ...List.generate(quantity, (index) {
@@ -329,12 +371,14 @@ class _DetailPageState extends State<DetailPage> {
                     fontSize: 14,
                   ),
                 ),
+
                 const SizedBox(height: 12),
 
                 buildUnitImageSelection(index),
 
                 if (hasSize) ...[
                   const SizedBox(height: 15),
+
                   const Text(
                     'Pilih Ukuran',
                     style: TextStyle(
@@ -343,6 +387,7 @@ class _DetailPageState extends State<DetailPage> {
                       fontSize: 13,
                     ),
                   ),
+
                   const SizedBox(height: 8),
 
                   Wrap(
@@ -381,6 +426,7 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
+  // Slider foto produk.
   Widget buildImageSlider() {
     final images = widget.product.images;
 
@@ -422,7 +468,9 @@ class _DetailPageState extends State<DetailPage> {
             child: Center(
               child: IconButton(
                 onPressed: previousImage,
-                icon: const Icon(Icons.arrow_back_ios_new),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new,
+                ),
                 style: IconButton.styleFrom(
                   backgroundColor:
                       Colors.white.withValues(alpha: 0.9),
@@ -431,6 +479,7 @@ class _DetailPageState extends State<DetailPage> {
               ),
             ),
           ),
+
           Positioned(
             right: 8,
             top: 0,
@@ -438,7 +487,9 @@ class _DetailPageState extends State<DetailPage> {
             child: Center(
               child: IconButton(
                 onPressed: nextImage,
-                icon: const Icon(Icons.arrow_forward_ios),
+                icon: const Icon(
+                  Icons.arrow_forward_ios,
+                ),
                 style: IconButton.styleFrom(
                   backgroundColor:
                       Colors.white.withValues(alpha: 0.9),
@@ -447,6 +498,7 @@ class _DetailPageState extends State<DetailPage> {
               ),
             ),
           ),
+
           Positioned(
             bottom: 12,
             left: 0,
@@ -477,6 +529,7 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
+  // Pengatur jumlah produk.
   Widget buildQuantitySelector() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -489,16 +542,21 @@ class _DetailPageState extends State<DetailPage> {
             color: navy,
           ),
         ),
+
         const SizedBox(height: 10),
+
         Row(
           children: [
             IconButton(
-              onPressed: quantity > 1 ? decreaseQuantity : null,
+              onPressed: quantity > 1
+                  ? decreaseQuantity
+                  : null,
               icon: const Icon(
                 Icons.remove_circle_outline,
                 color: navy,
               ),
             ),
+
             Text(
               '$quantity',
               style: const TextStyle(
@@ -507,6 +565,7 @@ class _DetailPageState extends State<DetailPage> {
                 color: navy,
               ),
             ),
+
             IconButton(
               onPressed: increaseQuantity,
               icon: const Icon(
@@ -526,18 +585,25 @@ class _DetailPageState extends State<DetailPage> {
 
     return Scaffold(
       backgroundColor: background,
+
       appBar: AppBar(
         backgroundColor: navy,
         foregroundColor: Colors.white,
         title: const Text('Detail Produk'),
+
+        // Ikon keranjang digeser sedikit ke kiri.
         actions: [
-          IconButton(
-            onPressed: openCart,
-            icon: Badge(
-              label: Text('$cartItemCount'),
-              isLabelVisible: cartItemCount > 0,
-              child: const Icon(
-                Icons.shopping_bag_outlined,
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: IconButton(
+              onPressed: openCart,
+              icon: Badge(
+                label: Text('$cartItemCount'),
+                isLabelVisible: cartItemCount > 0,
+                child: const Icon(
+                  Icons.shopping_bag_outlined,
+                  size: 26,
+                ),
               ),
             ),
           ),
@@ -616,12 +682,10 @@ class _DetailPageState extends State<DetailPage> {
 
             const SizedBox(height: 25),
 
-            // Jumlah ditampilkan sebelum pilihan setiap unit.
             buildQuantitySelector(),
 
             const SizedBox(height: 20),
 
-            // Jumlah unit menentukan banyaknya pilihan produk.
             buildUnitSelection(),
 
             const SizedBox(height: 15),
@@ -641,7 +705,9 @@ class _DetailPageState extends State<DetailPage> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                icon: const Icon(Icons.add_shopping_cart),
+                icon: const Icon(
+                  Icons.add_shopping_cart,
+                ),
                 label: const Text(
                   'Tambah ke Keranjang',
                   style: TextStyle(

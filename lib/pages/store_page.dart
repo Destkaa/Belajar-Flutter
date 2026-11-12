@@ -66,10 +66,17 @@ class _StorePageState extends State<StorePage> {
         foregroundColor: Colors.white,
         elevation: 0,
 
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.sports_soccer, size: 25),
+            Image.asset(
+              'assets/Icon.jpg',
+              width: 30,
+              height: 30,
+              fit: BoxFit.contain,
+            ),
+
             SizedBox(width: 10),
+
             Text(
               'PERSIB STORE',
               style: TextStyle(

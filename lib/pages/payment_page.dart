@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 import '../models/product.dart';
@@ -17,8 +18,7 @@ class PaymentPage extends StatefulWidget {
   final int? quantity;
   final List<CartItem>? items;
 
-  // CHECKOUT LANGSUNG DARI DETAIL PRODUK
-
+  // Checkout langsung dari detail produk.
   const PaymentPage({
     super.key,
     required Product product,
@@ -31,8 +31,7 @@ class PaymentPage extends StatefulWidget {
         quantity = quantity,
         items = null;
 
-  // CHECKOUT DARI KERANJANG
-
+  // Checkout dari keranjang atau Beli Sekarang.
   const PaymentPage.fromCart({
     super.key,
     required List<CartItem> items,
@@ -88,6 +87,13 @@ class _PaymentPageState extends State<PaymentPage> {
 
   int get total => subtotal + shippingCost;
 
+  int get totalQuantity {
+    return orderItems.fold(
+      0,
+      (total, item) => total + item.quantity,
+    );
+  }
+
   String imageName(String? path) {
     if (path == null) return 'Foto tidak tersedia';
 
@@ -123,6 +129,7 @@ class _PaymentPageState extends State<PaymentPage> {
     );
   }
 
+  // Tampilan setiap produk dan unit.
   Widget buildOrderItem(CartItem item) {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -130,7 +137,9 @@ class _PaymentPageState extends State<PaymentPage> {
       decoration: BoxDecoration(
         color: const Color(0xFFF5F7FA),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: Colors.grey.shade200,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,7 +152,9 @@ class _PaymentPageState extends State<PaymentPage> {
               fontSize: 16,
             ),
           ),
+
           const SizedBox(height: 4),
+
           Text(
             item.product.category,
             style: const TextStyle(
@@ -151,7 +162,9 @@ class _PaymentPageState extends State<PaymentPage> {
               fontSize: 12,
             ),
           ),
+
           const SizedBox(height: 12),
+
           ...List.generate(item.quantity, (index) {
             return Container(
               margin: const EdgeInsets.only(bottom: 9),
@@ -172,7 +185,9 @@ class _PaymentPageState extends State<PaymentPage> {
                     ),
                     child: buildUnitImage(item, index),
                   ),
+
                   const SizedBox(width: 12),
+
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,7 +200,9 @@ class _PaymentPageState extends State<PaymentPage> {
                             fontSize: 13,
                           ),
                         ),
+
                         const SizedBox(height: 5),
+
                         Text(
                           imageName(item.imageAt(index)),
                           style: const TextStyle(
@@ -193,6 +210,7 @@ class _PaymentPageState extends State<PaymentPage> {
                             fontSize: 12,
                           ),
                         ),
+
                         if (item.hasSize) ...[
                           const SizedBox(height: 3),
                           Text(
@@ -203,7 +221,9 @@ class _PaymentPageState extends State<PaymentPage> {
                             ),
                           ),
                         ],
+
                         const SizedBox(height: 4),
+
                         Text(
                           formatRupiah(item.product.price),
                           style: const TextStyle(
@@ -219,7 +239,9 @@ class _PaymentPageState extends State<PaymentPage> {
               ),
             );
           }),
+
           const Divider(),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -230,6 +252,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   fontSize: 12,
                 ),
               ),
+
               Text(
                 'Subtotal: ${formatRupiah(item.subtotal)}',
                 style: const TextStyle(
@@ -260,11 +283,15 @@ class _PaymentPageState extends State<PaymentPage> {
               title,
               style: TextStyle(
                 color: isTotal ? navy : Colors.black54,
-                fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+                fontWeight: isTotal
+                    ? FontWeight.bold
+                    : FontWeight.normal,
               ),
             ),
           ),
+
           const SizedBox(width: 10),
+
           Flexible(
             child: Text(
               value,
@@ -281,17 +308,20 @@ class _PaymentPageState extends State<PaymentPage> {
     );
   }
 
+  // Metode pembayaran.
   Widget buildPaymentMethod() {
     final methods = [
       {
         'name': 'Cash (Tunai)',
         'icon': Icons.payments_outlined,
-        'description': 'Pembayaran tunai saat pesanan diterima.',
+        'description':
+            'Pembayaran tunai saat pesanan diterima.',
       },
       {
         'name': 'QRIS',
         'icon': Icons.qr_code_2,
-        'description': 'Pembayaran menggunakan scan kode QRIS.',
+        'description':
+            'Pembayaran menggunakan scan kode QRIS.',
       },
     ];
 
@@ -312,11 +342,14 @@ class _PaymentPageState extends State<PaymentPage> {
               color: navy,
             ),
           ),
+
           const SizedBox(height: 12),
+
           ...methods.map((method) {
             final name = method['name'] as String;
             final icon = method['icon'] as IconData;
-            final description = method['description'] as String;
+            final description =
+                method['description'] as String;
 
             final isSelected = selectedPayment == name;
 
@@ -335,17 +368,26 @@ class _PaymentPageState extends State<PaymentPage> {
                       : Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isSelected ? blue : Colors.grey.shade300,
+                    color: isSelected
+                        ? blue
+                        : Colors.grey.shade300,
                     width: isSelected ? 1.5 : 1,
                   ),
                 ),
                 child: Row(
                   children: [
-                    Icon(icon, color: navy, size: 28),
+                    Icon(
+                      icon,
+                      color: navy,
+                      size: 28,
+                    ),
+
                     const SizedBox(width: 12),
+
                     Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
                         children: [
                           Text(
                             name,
@@ -354,7 +396,9 @@ class _PaymentPageState extends State<PaymentPage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+
                           const SizedBox(height: 4),
+
                           Text(
                             description,
                             style: const TextStyle(
@@ -365,6 +409,7 @@ class _PaymentPageState extends State<PaymentPage> {
                         ],
                       ),
                     ),
+
                     Icon(
                       isSelected
                           ? Icons.radio_button_checked
@@ -381,13 +426,17 @@ class _PaymentPageState extends State<PaymentPage> {
     );
   }
 
+  // Konfirmasi pembayaran.
   void confirmPayment() {
-    if (orderItems.isEmpty) return;
+    if (orderItems.isEmpty || isPaid) return;
 
+    // Simpan status pembayaran.
     setState(() {
       isPaid = true;
     });
 
+    // Keranjang hanya dikosongkan setelah konfirmasi.
+    // Checkout dari detail produk biasa tidak menghapus keranjang.
     if (widget.items != null) {
       cartItems.clear();
     }
@@ -402,6 +451,7 @@ class _PaymentPageState extends State<PaymentPage> {
     );
   }
 
+  // Bukti pembayaran.
   Widget buildReceipt() {
     return Center(
       child: SingleChildScrollView(
@@ -420,7 +470,9 @@ class _PaymentPageState extends State<PaymentPage> {
                 color: Colors.green,
                 size: 75,
               ),
+
               const SizedBox(height: 15),
+
               const Text(
                 'Pembayaran Berhasil!',
                 style: TextStyle(
@@ -429,13 +481,19 @@ class _PaymentPageState extends State<PaymentPage> {
                   color: navy,
                 ),
               ),
+
               const SizedBox(height: 8),
+
               const Text(
                 'Terima kasih telah berbelanja di PERSIB STORE.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.black54),
+                style: TextStyle(
+                  color: Colors.black54,
+                ),
               ),
+
               const Divider(height: 30),
+
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -447,20 +505,45 @@ class _PaymentPageState extends State<PaymentPage> {
                   ),
                 ),
               ),
+
               const SizedBox(height: 15),
+
               ...orderItems.map(buildOrderItem),
+
               const Divider(height: 25),
-              summaryRow('Subtotal', formatRupiah(subtotal)),
-              summaryRow('Ongkos Kirim', formatRupiah(shippingCost)),
+
+              summaryRow(
+                'Total Unit',
+                '$totalQuantity produk',
+              ),
+
+              summaryRow(
+                'Subtotal',
+                formatRupiah(subtotal),
+              ),
+
+              summaryRow(
+                'Ongkos Kirim',
+                formatRupiah(shippingCost),
+              ),
+
               const Divider(height: 20),
+
               summaryRow(
                 'Total Pembayaran',
                 formatRupiah(total),
                 isTotal: true,
               ),
+
               const SizedBox(height: 10),
-              summaryRow('Metode Pembayaran', selectedPayment),
+
+              summaryRow(
+                'Metode Pembayaran',
+                selectedPayment,
+              ),
+
               const SizedBox(height: 25),
+
               SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -473,10 +556,14 @@ class _PaymentPageState extends State<PaymentPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  icon: const Icon(Icons.storefront_outlined),
+                  icon: const Icon(
+                    Icons.storefront_outlined,
+                  ),
                   label: const Text(
                     'Kembali ke Beranda',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -522,9 +609,13 @@ class _PaymentPageState extends State<PaymentPage> {
                 color: navy,
               ),
             ),
+
             const SizedBox(height: 15),
+
             ...orderItems.map(buildOrderItem),
+
             const SizedBox(height: 10),
+
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
@@ -533,12 +624,23 @@ class _PaymentPageState extends State<PaymentPage> {
               ),
               child: Column(
                 children: [
-                  summaryRow('Subtotal', formatRupiah(subtotal)),
+                  summaryRow(
+                    'Total Unit',
+                    '$totalQuantity produk',
+                  ),
+
+                  summaryRow(
+                    'Subtotal',
+                    formatRupiah(subtotal),
+                  ),
+
                   summaryRow(
                     'Ongkos Kirim',
                     formatRupiah(shippingCost),
                   ),
+
                   const Divider(height: 25),
+
                   summaryRow(
                     'Total Pembayaran',
                     formatRupiah(total),
@@ -547,9 +649,13 @@ class _PaymentPageState extends State<PaymentPage> {
                 ],
               ),
             ),
+
             const SizedBox(height: 20),
+
             buildPaymentMethod(),
+
             const SizedBox(height: 25),
+
             SizedBox(
               width: double.infinity,
               height: 52,
@@ -572,6 +678,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
           ],
         ),

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:rpl2/list_grid_view/Instagram.dart';
 import 'package:rpl2/pages/formulir.dart';
@@ -7,6 +6,7 @@ import 'package:rpl2/pages/about_page.dart';
 import 'package:rpl2/list_grid_view/ListView.dart';
 import 'package:rpl2/list_grid_view/GridView.basic.dart';
 import 'package:rpl2/pages/store_page.dart';
+import 'package:rpl2/pages/Album_page.dart';
 
 const Color navy = Color(0xFF102A43);
 const Color blue = Color(0xFF1455A3);
@@ -211,6 +211,16 @@ class HomePage extends StatelessWidget {
                   color: const Color(0xFF27845B),
                   onTap: () {
                     navigate(context, BelajarForm());
+                  },
+                ),
+
+                MenuCard(
+                  title: 'Album API',
+                  subtitle: 'Fetch data API',
+                  icon: Icons.album_rounded,
+                  color: const Color(0xFF8E5BA6),
+                  onTap: () {
+                    navigate(context, const AlbumPage());
                   },
                 ),
               ],
