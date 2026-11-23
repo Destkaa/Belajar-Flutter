@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../constants/api_constants.dart';
+import '../constant/api_constants.dart';
 import '../models/post.dart';
 
 class ApiService {

@@ -11,6 +11,9 @@ import 'package:rpl2/pages/input_page.dart';
 import 'package:rpl2/pages/store_page.dart';
 import 'package:rpl2/pages/Album_page.dart';
 
+import 'package:rpl2/pages/login_page.dart';
+import 'package:rpl2/pages/register_page.dart';
+
 class AppRoutes {
   static const String home = '/';
   static const String about = '/about';
@@ -19,6 +22,8 @@ class AppRoutes {
   static const String input = '/input';
   static const String persib = '/persib';
   static const String album = '/album';
+  static const String login = '/login';
+  static const String register = '/register';
 
   static final Map<String, WidgetBuilder> routes = {
     home: (context) => HomePage(),
@@ -26,6 +31,8 @@ class AppRoutes {
     Instagram: (context) => BerandaInstagram(),
     formulir: (context) => Formulir(),
     input: (context) => BelajarForm(),
+    login:(context) => LoginPage(),
+    register:(context) => RegisterPage(),
 
     // Persib Store
     persib: (context) => const StorePage(),

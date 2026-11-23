@@ -1,21 +1,56 @@
+
 import 'package:flutter/material.dart';
-import 'package:rpl2/list_grid_view/Instagram.dart';
-import 'package:rpl2/pages/formulir.dart';
-import 'package:rpl2/pages/input_page.dart';
-import 'package:rpl2/pages/about_page.dart';
-import 'package:rpl2/list_grid_view/ListView.dart';
-import 'package:rpl2/list_grid_view/GridView.basic.dart';
-import 'package:rpl2/pages/store_page.dart';
-import 'package:rpl2/pages/Album_page.dart';
-import 'package:rpl2/pages/post_page.dart';
-import 'package:rpl2/pages/user_page.dart';
 
-const Color navy = Color(0xFF102A43);
-const Color blue = Color(0xFF1455A3);
-const Color background = Color(0xFFF5F7FA);
+import '../models/user_model.dart';
+import '../services/auth_service.dart';
+import 'login_page.dart';
+import 'home.dart'; // Import halaman dashboard
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final _auth = AuthService();
+  late Future<UserModel> _futureUser;
+
+  static const Color navy = Color(0xFF102A43);
+  static const Color blue = Color(0xFF1455A3);
+  static const Color background = Color(0xFFF5F7FA);
+
+  @override
+  void initState() {
+    super.initState();
+    _futureUser = _auth.getUser();
+  }
+
+  // Logout
+  Future<void> _logout() async {
+    await _auth.logout();
+
+    if (!mounted) return;
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const LoginPage(),
+      ),
+      (_) => false,
+    );
+  }
+
+  // Navigasi ke Dashboard
+  void _openDashboard() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const HomePages(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,428 +58,324 @@ class HomePage extends StatelessWidget {
       backgroundColor: background,
 
       appBar: AppBar(
-        backgroundColor: navy,
-        foregroundColor: Colors.white,
+        backgroundColor: background,
         elevation: 0,
-        title: const Row(
-          children: [
-            Icon(Icons.dashboard_rounded, size: 23),
-            SizedBox(width: 10),
-            Text(
-              'My Dashboard',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ],
+        title: const Text(
+          'My Account',
+          style: TextStyle(
+            color: navy,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
         ),
+        actions: [
+          IconButton(
+            onPressed: _logout,
+            tooltip: 'Logout',
+            icon: const Icon(
+              Icons.logout_rounded,
+              color: navy,
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
 
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Banner
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: navy,
-                borderRadius: BorderRadius.circular(20),
+      body: FutureBuilder<UserModel>(
+        future: _futureUser,
+        builder: (context, snap) {
+          if (snap.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(
+                color: blue,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: blue,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'WELCOME BACK',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ),
+            );
+          }
 
-                  const SizedBox(height: 18),
-
-                  const Text(
-                    'Halo, Kaka!',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 27,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  const Text(
-                    'Selamat datang di halaman utama aplikasi.',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 13,
-                      height: 1.5,
-                    ),
-                  ),
-
-                  const SizedBox(height: 18),
-
-                  const Row(
-                    children: [
-                      Icon(
-                        Icons.apps_rounded,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        'Learning Dashboard',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 28),
-
-            // Section Title
-            const Text(
-              'Menu Aplikasi',
-              style: TextStyle(
-                fontSize: 21,
-                fontWeight: FontWeight.bold,
-                color: navy,
-              ),
-            ),
-
-            const SizedBox(height: 6),
-
-            const Text(
-              'Pilih halaman yang ingin kamu kunjungi.',
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.grey,
-              ),
-            ),
-
-            const SizedBox(height: 18),
-
-            // Menu Grid
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisSpacing: 14,
-              mainAxisSpacing: 14,
-              childAspectRatio: 1.25,
-              children: [
-                MenuCard(
-                  title: 'About',
-                  subtitle: 'Tentang aplikasi',
-                  icon: Icons.person_outline_rounded,
-                  color: const Color(0xFF1455A3),
-                  onTap: () {
-                    navigate(context, const AboutPage());
-                  },
-                ),
-
-                MenuCard(
-                  title: 'ListView',
-                  subtitle: 'Daftar data',
-                  icon: Icons.view_list_rounded,
-                  color: const Color(0xFF087E8B),
-                  onTap: () {
-                    navigate(context, const ContohListView());
-                  },
-                ),
-
-                MenuCard(
-                  title: 'GridView',
-                  subtitle: 'Tampilan grid',
-                  icon: Icons.grid_view_rounded,
-                  color: const Color(0xFF7353BA),
-                  onTap: () {
-                    navigate(context, const ContohGridView());
-                  },
-                ),
-
-                MenuCard(
-                  title: 'Instagram',
-                  subtitle: 'UI Instagram',
-                  icon: Icons.camera_alt_outlined,
-                  color: const Color(0xFFD65A7A),
-                  onTap: () {
-                    navigate(context, const BerandaInstagram());
-                  },
-                ),
-
-                MenuCard(
-                  title: 'Formulir',
-                  subtitle: 'Input data',
-                  icon: Icons.assignment_outlined,
-                  color: const Color(0xFFDA8B24),
-                  onTap: () {
-                    navigate(context, Formulir());
-                  },
-                ),
-
-                MenuCard(
-                  title: 'Input Form',
-                  subtitle: 'Belajar form',
-                  icon: Icons.edit_note_rounded,
-                  color: const Color(0xFF27845B),
-                  onTap: () {
-                    navigate(context, BelajarForm());
-                  },
-                ),
-
-                MenuCard(
-                  title: 'Album API',
-                  subtitle: 'Fetch data API',
-                  icon: Icons.album_rounded,
-                  color: const Color(0xFF8E5BA6),
-                  onTap: () {
-                    navigate(context, const AlbumPage());
-                  },
-                ),
-
-                MenuCard(
-                  title: 'Post Page',
-                  subtitle: 'Post',
-                  icon: Icons.storefront_rounded,
-                  color: const Color(0xFF8E5BA6),
-                  onTap: () {
-                    navigate(context, const PostPage());
-                  },
-                ),
-                MenuCard(
-                  title: 'Users Page',
-                  subtitle: 'Users',
-                  icon: Icons.storefront_rounded,
-                  color: const Color(0xFF8E5BA6),
-                  onTap: () {
-                    navigate(context, const UserPage());
-                  },
-                )
-              ],
-            ),
-
-            const SizedBox(height: 28),
-
-            // Persib Store Section
-            const Text(
-              'Featured Application',
-              style: TextStyle(
-                fontSize: 21,
-                fontWeight: FontWeight.bold,
-                color: navy,
-              ),
-            ),
-
-            const SizedBox(height: 14),
-
-            InkWell(
-              borderRadius: BorderRadius.circular(18),
-              onTap: () {
-                navigate(context, const StorePage());
-              },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFF102A43),
-                      Color(0xFF1455A3),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Row(
+          if (snap.hasError) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      width: 58,
-                      height: 58,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: const Icon(
-                        Icons.storefront_rounded,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                    ),
-
-                    const SizedBox(width: 16),
-
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Persib Store',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            'Explore merchandise Maung Bandung',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
                     const Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      color: Colors.white,
-                      size: 18,
+                      Icons.error_outline_rounded,
+                      size: 48,
+                      color: Colors.redAccent,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      snap.error.toString(),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _logout,
+                      child: const Text('Kembali ke Login'),
                     ),
                   ],
                 ),
               ),
-            ),
+            );
+          }
 
-            const SizedBox(height: 25),
+          if (!snap.hasData) {
+            return const Center(
+              child: Text('Data pengguna tidak ditemukan'),
+            );
+          }
 
-            // Footer
-            Center(
-              child: Text(
-                'MY APPLICATION • 2026',
-                style: TextStyle(
-                  color: Colors.grey.shade500,
-                  fontSize: 10,
-                  letterSpacing: 1.5,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+          final user = snap.data!;
 
-            const SizedBox(height: 10),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void navigate(BuildContext context, Widget page) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => page,
-      ),
-    );
-  }
-}
-
-// Reusable Menu Card
-class MenuCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-
-  const MenuCard({
-    super.key,
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Colors.grey.shade200,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.10),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 23,
-              ),
-            ),
-
-            Column(
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 12),
+
+                // Welcome Section
+                const Text(
+                  'WELCOME BACK',
+                  style: TextStyle(
+                    color: blue,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2,
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
                 Text(
-                  title,
+                  'Halo, ${user.name}!',
                   style: const TextStyle(
                     color: navy,
-                    fontSize: 14,
+                    fontSize: 27,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
 
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
 
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 10,
+                const Text(
+                  'Senang melihatmu kembali. '
+                  'Apa yang ingin kamu pelajari hari ini?',
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 14,
+                    height: 1.5,
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // Profile Card
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(22),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: Colors.grey.shade200,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'ACCOUNT INFORMATION',
+                        style: TextStyle(
+                          color: Colors.black45,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      Row(
+                        children: [
+                          Container(
+                            width: 52,
+                            height: 52,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE8F0FE),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: const Icon(
+                              Icons.person_rounded,
+                              color: blue,
+                              size: 30,
+                            ),
+                          ),
+
+                          const SizedBox(width: 14),
+
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  user.name,
+                                  style: const TextStyle(
+                                    color: navy,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  'Registered User',
+                                  style: TextStyle(
+                                    color: Colors.black45,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 22),
+
+                      const Divider(),
+
+                      const SizedBox(height: 12),
+
+                      const Text(
+                        'Email Address',
+                        style: TextStyle(
+                          color: Colors.black45,
+                          fontSize: 12,
+                        ),
+                      ),
+
+                      const SizedBox(height: 6),
+
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.email_outlined,
+                            color: blue,
+                            size: 19,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              user.email,
+                              style: const TextStyle(
+                                color: navy,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Dashboard Card
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(22),
+                  decoration: BoxDecoration(
+                    color: navy,
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.dashboard_customize_rounded,
+                        color: Colors.white,
+                        size: 32,
+                      ),
+
+                      const SizedBox(height: 18),
+
+                      const Text(
+                        'My Dashboard',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 21,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      Text(
+                        'Jelajahi berbagai fitur dan '
+                        'aplikasi pembelajaran yang tersedia.',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.75),
+                          fontSize: 13,
+                          height: 1.5,
+                        ),
+                      ),
+
+                      const SizedBox(height: 22),
+
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton(
+                          onPressed: _openDashboard,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: navy,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Open Dashboard',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              Icon(
+                                Icons.arrow_forward_rounded,
+                                size: 18,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // Footer
+                Center(
+                  child: Text(
+                    'Flutter Learning App',
+                    style: TextStyle(
+                      color: Colors.grey.shade500,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
