@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import 'package:rpl2/list_grid_view/Instagram.dart';
@@ -14,6 +13,7 @@ import 'package:rpl2/pages/user_page.dart';
 
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
+import 'article_list_page.dart';
 import 'login_page.dart';
 
 const Color navy = Color(0xFF102A43);
@@ -380,6 +380,17 @@ class _HomePagesState extends State<HomePages> {
                   color: const Color(0xFF8E5BA6),
                   onTap: () {
                     navigate(context, const UserPage());
+                  },
+                ),
+
+                // MENU BARU: Artikel
+                MenuCard(
+                  title: 'Artikel',
+                  subtitle: 'Tulis & kelola',
+                  icon: Icons.article_outlined,
+                  color: const Color(0xFF0758ED),
+                  onTap: () {
+                    navigate(context, const ArticleListPage());
                   },
                 ),
               ],

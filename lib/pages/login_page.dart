@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../services/api_exception.dart';
 import '../services/auth_service.dart';
-import 'home_page.dart';
+import 'home.dart'; // Dashboard (HomePages)
 import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -99,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
         context,
         PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 350),
-          pageBuilder: (_, __, ___) => const HomePage(),
+          pageBuilder: (_, __, ___) => const HomePages(),
           transitionsBuilder: (_, animation, __, child) =>
               FadeTransition(opacity: animation, child: child),
         ),
@@ -313,7 +313,7 @@ class _LoginPageState extends State<LoginPage> {
       cursorColor: primaryBlue,
       decoration: _inputDecoration(
         label: 'Password',
-        hint: '........',
+        hint: 'Masukkan password',
         icon: Icons.lock_outline,
         suffix: IconButton(
           tooltip: _obscurePassword ? 'Tampilkan password' : 'Sembunyikan password',

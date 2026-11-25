@@ -32,13 +32,6 @@ class _RegisterPageState extends State<RegisterPage> {
   static const Color warningColor = Color(0xFFF79009);
 
   @override
-  void initState() {
-    super.initState();
-    // Supaya indikator kekuatan password ikut berubah saat mengetik.
-    _passC.addListener(() => setState(() {}));
-  }
-
-  @override
   void dispose() {
     _nameC.dispose();
     _emailC.dispose();
@@ -364,8 +357,6 @@ class _RegisterPageState extends State<RegisterPage> {
       enabled: !_loading,
       obscureText: _obscurePassword,
       textInputAction: TextInputAction.done,
-      autofillHints: const [AutofillHints.newPassword],
-      autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: _validatePassword,
       onFieldSubmitted: (_) => _register(),
       style: const TextStyle(fontSize: 14, color: inkColor),
@@ -391,7 +382,15 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildStrengthIndicator() {
-    final strength = _passwordStrength;
+    // Hanya indikator ini yang rebuild saat password berubah,
+    // sehingga field password tidak ikut dibangun ulang.
+    return ValueListenableBuilder<TextEditingValue>(
+      valueListenable: _passC,
+      builder: (context, _, __) => _strengthContent(_passwordStrength),
+    );
+  }
+
+  Widget _strengthContent(int strength) {
     final (label, color) = switch (strength) {
       1 => ('Lemah', errorColor),
       2 => ('Cukup', warningColor),
