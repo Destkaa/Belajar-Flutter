@@ -5,7 +5,7 @@ import '../models/article_model.dart';
 import 'api_client.dart';
 
 class ArticleService {
-  final _api = ApiClient();
+  final ApiClient _api = ApiClient();
 
   // READ: mengambil semua artikel
   Future<List<ArticleModel>> getAll() async {
@@ -17,7 +17,7 @@ class ArticleService {
     final list = body['data'] as List;
 
     return list
-        .map((e) => ArticleModel.fromJson(e))
+        .map((item) => ArticleModel.fromJson(item))
         .toList();
   }
 
@@ -39,7 +39,7 @@ class ArticleService {
     return ArticleModel.fromJson(body['data']);
   }
 
-  // UPDATE: mengubah artikel, dengan opsi mengganti atau menghapus foto
+  // UPDATE: mengubah artikel dan opsional mengganti atau menghapus foto
   Future<ArticleModel> update(
     int id, {
     required String title,
@@ -47,14 +47,20 @@ class ArticleService {
     XFile? image,
     bool removeImage = false,
   }) async {
+    final fields = <String, String>{
+      '_method': 'PUT',
+      'title': title,
+      'content': content,
+    };
+
+    // Hanya kirim flag hapus jika tidak ada foto baru yang dipilih.
+    if (removeImage && image == null) {
+      fields['remove_image'] = '1';
+    }
+
     final body = await _api.multipart(
       '${ApiConstants.articles}/$id',
-      fields: {
-        '_method': 'PUT',
-        'title': title,
-        'content': content,
-        if (removeImage) 'remove_image': '1',
-      },
+      fields: fields,
       file: image,
     );
 

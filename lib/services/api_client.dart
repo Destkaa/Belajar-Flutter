@@ -22,8 +22,16 @@ class ApiClient {
     await prefs.remove(_tokenKey);
   }
 
-  // ---------------- REQUEST JSON (surat) ----------------
-  /// [method] = 'GET' | 'POST' | 'PUT' | 'DELETE'
+  Map<String, String> _headers(String? token) {
+    return {
+      'Accept': 'application/json',
+      if (token != null && token.isNotEmpty)
+        'Authorization': 'Bearer $token',
+    };
+  }
+
+  // ---------------- REQUEST JSON ----------------
+  /// [method] = GET | POST | PUT | DELETE
   Future<Map<String, dynamic>> request(
     String method,
     String url, {
@@ -32,28 +40,29 @@ class ApiClient {
     final token = await _getToken();
     final uri = Uri.parse(url);
     final headers = {
-      'Accept': 'application/json',
+      ..._headers(token),
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
     };
     final encoded = body == null ? null : jsonEncode(body);
 
-    final response = await _guard(switch (method) {
-      'GET' => http.get(uri, headers: headers),
-      'POST' => http.post(uri, headers: headers, body: encoded),
-      'PUT' => http.put(uri, headers: headers, body: encoded),
-      'DELETE' => http.delete(uri, headers: headers),
-      _ => throw ArgumentError('Method tidak dikenal: $method'),
-    });
+    final response = await _guard(
+      switch (method.toUpperCase()) {
+        'GET' => http.get(uri, headers: headers),
+        'POST' => http.post(uri, headers: headers, body: encoded),
+        'PUT' => http.put(uri, headers: headers, body: encoded),
+        'DELETE' => http.delete(uri, headers: headers),
+        _ => throw ArgumentError('Method tidak dikenal: $method'),
+      },
+    );
 
-    return _handle(response, '$method $url');
+    return _handle(response, '${method.toUpperCase()} $url');
   }
 
-  // ---------------- REQUEST MULTIPART (paket + file) ----------------
-  /// Selalu memakai POST (lihat penjelasan _method=PUT di backend).
+  // ---------------- REQUEST MULTIPART ----------------
+  /// Mengirim field teks dan file gambar.
+  /// Backend Laravel dapat membaca gambar dengan $request->file('image').
   ///
-  /// [fileField] harus sama persis dengan nama field file yang dibaca
-  /// backend (mis. `$request->file('image')` di Laravel).
+  /// Untuk update, backend perlu mendukung POST dengan _method=PUT.
   Future<Map<String, dynamic>> multipart(
     String url, {
     required Map<String, String> fields,
@@ -62,28 +71,28 @@ class ApiClient {
   }) async {
     final token = await _getToken();
 
-    // Jangan set Content-Type manual! http akan mengisi boundary otomatis.
     final request = http.MultipartRequest('POST', Uri.parse(url))
-      ..headers.addAll({
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      })
+      ..headers.addAll(_headers(token))
       ..fields.addAll(fields);
 
     if (file != null) {
-      // Dibaca sebagai bytes agar jalan di mobile maupun web.
       final bytes = await file.readAsBytes();
-      final name = file.name.isNotEmpty ? file.name : 'upload.jpg';
+      final filename = file.name.isNotEmpty ? file.name : 'upload.jpg';
+
       debugPrint(
-        'UPLOAD file: $name (${(bytes.length / 1024).toStringAsFixed(0)} KB), '
-        'field: $fileField',
+        'UPLOAD file: $filename '
+        '(${(bytes.length / 1024).toStringAsFixed(0)} KB)',
       );
+
       request.files.add(
-        http.MultipartFile.fromBytes(fileField, bytes, filename: name),
+        http.MultipartFile.fromBytes(
+          fileField,
+          bytes,
+          filename: filename,
+        ),
       );
     }
 
-    // Upload foto butuh waktu lebih lama, jadi timeout 60 detik
     final response = await _guard(
       request.send().then(http.Response.fromStream),
       timeout: const Duration(seconds: 60),
@@ -92,14 +101,8 @@ class ApiClient {
     return _handle(response, 'POST(multipart) $url');
   }
 
-  // ---------------- ALAT BANTU ----------------
+  // ---------------- PENANGANAN KONEKSI ----------------
 
-  /// Menunggu response dengan batas waktu + menangani error koneksi.
-  ///
-  /// Catatan: package `http` membungkus SocketException menjadi
-  /// `ClientException`, jadi `on SocketException` saja tidak cukup.
-  /// Itu sebabnya upload yang terputus sebelumnya lolos sebagai
-  /// "kesalahan tak terduga".
   Future<http.Response> _guard(
     Future<http.Response> future, {
     Duration timeout = const Duration(seconds: 15),
@@ -117,8 +120,7 @@ class ApiClient {
     } on http.ClientException catch (e) {
       debugPrint('ClientException: ${e.message}');
       throw ApiException(
-        'Koneksi ke server terputus. Jika sedang mengunggah foto, '
-        'ukuran file mungkin melebihi batas server.',
+        'Koneksi ke server terputus. Periksa koneksi dan ukuran file.',
       );
     } on HttpException catch (e) {
       debugPrint('HttpException: ${e.message}');
@@ -126,7 +128,8 @@ class ApiClient {
     }
   }
 
-  /// Membaca response dan menerjemahkan status code.
+  // ---------------- PENANGANAN RESPONSE ----------------
+
   Future<Map<String, dynamic>> _handle(
     http.Response response,
     String label,
@@ -135,16 +138,12 @@ class ApiClient {
     final ok = status >= 200 && status < 300;
 
     if (!ok) {
-      // Log agar penyebab bisa dibaca di konsol `flutter run`.
       debugPrint('API ERROR [$label] status=$status');
       debugPrint(
         'BODY: ${response.body.length > 800 ? response.body.substring(0, 800) : response.body}',
       );
     }
 
-    // Saat sukses, body harus JSON valid. Saat gagal, body boleh bukan JSON
-    // (mis. halaman HTML 413/500 dari nginx atau PHP), jadi dibaca longgar
-    // supaya status code tetap diterjemahkan dengan benar.
     final data = _decode(response, strict: ok);
 
     if (ok) return data;
@@ -170,25 +169,36 @@ class ApiClient {
     }
   }
 
-  Map<String, dynamic> _decode(http.Response response, {required bool strict}) {
+  Map<String, dynamic> _decode(
+    http.Response response, {
+    required bool strict,
+  }) {
     if (response.body.isEmpty) return {};
+
     try {
       final data = jsonDecode(response.body);
       return data is Map<String, dynamic> ? data : {};
     } on FormatException {
       if (strict) {
-        throw ApiException('Response server tidak valid', response.statusCode);
+        throw ApiException(
+          'Response server tidak valid',
+          response.statusCode,
+        );
       }
       return {};
     }
   }
 
   String _parseErrors(Map<String, dynamic> body) {
-    final source = body['errors'] is Map ? body['errors'] as Map : body;
+    final source = body['errors'] is Map
+        ? body['errors'] as Map
+        : body;
+
     final messages = source.values
-        .expand((e) => e is List ? e : [e])
-        .map((e) => e.toString())
+        .expand((value) => value is List ? value : [value])
+        .map((value) => value.toString())
         .toList();
+
     return messages.isEmpty ? 'Data tidak valid' : messages.join('\n');
   }
 }
